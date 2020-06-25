@@ -4,7 +4,9 @@ import 'package:eCommerce/providers/products_provider.dart';
 import 'package:eCommerce/utils/appRoutes.dart';
 import 'package:eCommerce/views/cart_screen.dart';
 import 'package:eCommerce/views/order_screen.dart';
+import 'package:eCommerce/views/product_form_screen.dart';
 import 'package:eCommerce/views/products_overview_screen.dart';
+import 'package:eCommerce/views/products_screen.dart';
 import 'package:eCommerce/widgets/product_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,6 +40,8 @@ class MyApp extends StatelessWidget {
           AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailScreen(),
           AppRoutes.CART: (ctx) => CartScreen(),
           AppRoutes.ORDER: (ctx) => OrderScreen(),
+          AppRoutes.PRODUCTS: (ctx) => ProductsScreen(),
+          AppRoutes.PRODUCT_FORM: (ctx) => ProductFormScreen(),
         },
         home: ProductsOverViewScreen(),
       ),
