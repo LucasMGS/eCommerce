@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class ProductGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Product product = Provider.of<Product>(context, listen: false);
+    final product = Provider.of<Product>(context, listen: false);
     final Cart cart = Provider.of<Cart>(context, listen: false);
     final theme = Theme.of(context);
     return ClipRRect(
@@ -45,6 +45,7 @@ class ProductGridItem extends StatelessWidget {
               Scaffold.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Produto adicionado com sucesso!'),
+                  // backgroundColor: Colors.green,
                   action: SnackBarAction(
                       label: 'DESFAZER',
                       onPressed: () => cart.removeSingleItem(product.id)),

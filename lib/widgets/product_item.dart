@@ -1,3 +1,4 @@
+import 'package:eCommerce/exceptions/http_exception.dart';
 import 'package:eCommerce/providers/product.dart';
 import 'package:eCommerce/providers/products_provider.dart';
 import 'package:eCommerce/utils/appRoutes.dart';
@@ -8,9 +9,9 @@ class ProductItem extends StatelessWidget {
   final Product product;
 
   const ProductItem({Key key, this.product}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold.of(context);
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: NetworkImage(product.imageUrl),
@@ -52,19 +53,32 @@ class ProductItem extends StatelessWidget {
                     actions: <Widget>[
                       FlatButton(
                         child: Text('Não'),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context).pop(false),
                       ),
                       FlatButton(
                         child: Text('Sim'),
-                        onPressed: () {
-                          Provider.of<ProductsProvider>(context, listen: false)
-                              .removeProduct(product.id);
-                          Navigator.of(context).pop();
-                        },
+                        onPressed: () => Navigator.of(context).pop(true),
                       ),
                     ],
                   ),
-                );
+                ).then((value) async {
+                  if (value) {
+                    try {
+                      await Provider.of<ProductsProvider>(context,
+                              listen: false)
+                          .removeProduct(product.id);
+                      scaffold.showSnackBar(SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text('Produto removido com sucesso!'),
+                      ));
+                    } on HttpException catch (error) {
+                      scaffold.showSnackBar(SnackBar(
+                        backgroundColor: Colors.red,
+                        content: Text(error.toString()),
+                      ));
+                    }
+                  }
+                });
               },
             ),
           ],

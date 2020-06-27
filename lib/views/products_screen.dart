@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProductsScreen extends StatelessWidget {
+  Future<void> refreshProducts(BuildContext context) async {
+    return Provider.of<ProductsProvider>(context, listen: false).loadProducts();
+  }
+
   @override
   Widget build(BuildContext context) {
     var products = Provider.of<ProductsProvider>(context).products;
@@ -23,15 +27,18 @@ class ProductsScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: products.length,
-          itemBuilder: (_, i) => Column(
-            children: <Widget>[
-              ProductItem(product: products[i]),
-              Divider(),
-            ],
+      body: RefreshIndicator(
+        onRefresh: () => refreshProducts(context),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+            itemCount: products.length,
+            itemBuilder: (_, i) => Column(
+              children: <Widget>[
+                ProductItem(product: products[i]),
+                Divider(),
+              ],
+            ),
           ),
         ),
       ),

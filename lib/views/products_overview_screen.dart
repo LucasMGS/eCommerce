@@ -1,4 +1,5 @@
 import 'package:eCommerce/providers/cart.dart';
+import 'package:eCommerce/providers/products_provider.dart';
 import 'package:eCommerce/utils/appRoutes.dart';
 import 'package:eCommerce/widgets/app_drawer.dart';
 import 'package:eCommerce/widgets/badge.dart';
@@ -18,6 +19,15 @@ class ProductsOverViewScreen extends StatefulWidget {
 
 class _ProductsOverViewScreenState extends State<ProductsOverViewScreen> {
   bool _showFavoriteOnly = false;
+  bool _isLoading = true;
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<ProductsProvider>(context, listen: false)
+        .loadProducts()
+        .then((_) => setState(() => _isLoading = false));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +73,9 @@ class _ProductsOverViewScreenState extends State<ProductsOverViewScreen> {
           ),
         ],
       ),
-      body: ProductGrid(_showFavoriteOnly),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : ProductGrid(_showFavoriteOnly),
       drawer: AppDrawer(),
     );
   }
