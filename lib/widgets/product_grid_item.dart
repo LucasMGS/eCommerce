@@ -1,3 +1,4 @@
+import 'package:eCommerce/providers/auth_provider.dart';
 import 'package:eCommerce/providers/cart.dart';
 import 'package:eCommerce/providers/product.dart';
 import 'package:eCommerce/utils/appRoutes.dart';
@@ -9,6 +10,7 @@ class ProductGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
     final Cart cart = Provider.of<Cart>(context, listen: false);
+    final AuthProvider auth = Provider.of(context, listen: false);
     final theme = Theme.of(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -32,7 +34,7 @@ class ProductGridItem extends StatelessWidget {
             ),
             color: theme.accentColor,
             onPressed: () {
-              product.toggleFavorite();
+              product.toggleFavorite(auth.token, auth.userId);
             },
           ),
           title: Text(product.title),

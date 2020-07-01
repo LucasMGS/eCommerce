@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProductsScreen extends StatelessWidget {
-  Future<void> refreshProducts(BuildContext context) async {
+  Future<void> refreshProducts(BuildContext context) {
     return Provider.of<ProductsProvider>(context, listen: false).loadProducts();
   }
 

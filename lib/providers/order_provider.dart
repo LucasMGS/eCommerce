@@ -8,6 +8,9 @@ import 'package:http/http.dart' as http;
 class OrderProvider with ChangeNotifier {
   final _baseUrl = 'https://ecommerce-dd3fb.firebaseio.com/orders';
   List<Order> _orders = [];
+  String _token;
+  String _userId;
+  OrderProvider([this._token, this._userId, this._orders = const []]);
 
   List<Order> get orders => [..._orders];
 
@@ -16,7 +19,7 @@ class OrderProvider with ChangeNotifier {
   Future<void> addOrder(Cart cart) async {
     final date = DateTime.now();
 
-    final response = await http.post("$_baseUrl.json",
+    final response = await http.post("$_baseUrl/$_userId.json?auth=$_token",
         body: json.encode({
           'total': cart.getTotalAmount,
           'date': date.toIso8601String(),
@@ -44,12 +47,14 @@ class OrderProvider with ChangeNotifier {
   }
 
   Future<void> loadOrders() async {
-    final response = await http.get("$_baseUrl.json");
+    List<Order> loadedItems = [];
+    final response = await http.get("$_baseUrl/$_userId.json?auth=$_token");
     Map<String, dynamic> data = json.decode(response.body);
 
+    loadedItems.clear();
     if (data != null) {
       data.forEach((orderId, orderData) {
-        _orders.add(
+        loadedItems.add(
           Order(
             id: orderId,
             total: orderData['total'],
@@ -68,6 +73,7 @@ class OrderProvider with ChangeNotifier {
       });
       notifyListeners();
     }
+    _orders = loadedItems.reversed.toList();
     return Future.value();
   }
 }

@@ -6,10 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ProductsProvider with ChangeNotifier {
+  String _token;
+  String _userId;
+  List<Product> get products => [..._products];
+
+  ProductsProvider([this._token, this._userId, this._products = const []]);
   final _baseUrl = '${Constants.BASE_API_URL}/products';
   List<Product> _products = [];
 
-  List<Product> get products => [..._products];
   List<Product> get favoriteProducts {
     return _products.where((product) => product.isFavorite).toList();
   }
@@ -17,14 +21,13 @@ class ProductsProvider with ChangeNotifier {
   int get productCount => _products.length;
 
   Future<void> addProduct(Product product) async {
-    final response = await http.post("$_baseUrl.json",
+    final response = await http.post("$_baseUrl.json?auth=$_token",
         body: json.encode(
           {
             'title': product.title,
             'price': product.price,
             'imageUrl': product.imageUrl,
             'description': product.description,
-            'isFavorite': product.isFavorite,
           },
         ));
     _products.add(Product(
@@ -44,7 +47,7 @@ class ProductsProvider with ChangeNotifier {
     final index = _products.indexWhere((element) => element.id == product.id);
     if (index >= 0) {
       await http.patch(
-        "$_baseUrl/${product.id}.json",
+        "$_baseUrl/${product.id}.json?auth=$_token",
         body: json.encode({
           'title': product.title,
           'description': product.description,
@@ -64,7 +67,8 @@ class ProductsProvider with ChangeNotifier {
       _products.remove(product);
       notifyListeners();
 
-      final response = await http.delete("$_baseUrl/$productId.json");
+      final response =
+          await http.delete("$_baseUrl/$productId.json?auth=$_token");
       if (response.statusCode >= 400) {
         _products.insert(index, product);
         notifyListeners();
@@ -74,11 +78,15 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> loadProducts() async {
-    final response = await http.get("$_baseUrl.json");
+    final response = await http.get("$_baseUrl.json?auth=$_token");
     Map<String, dynamic> data = json.decode(response.body);
+    final favoriteResponse = await http.get(
+        '${Constants.BASE_API_URL}/userFavorites/$_userId.json?auth=$_token');
+    final favMap = json.decode(favoriteResponse.body);
     _products.clear();
     if (data != null) {
       data.forEach((productId, productData) {
+        final isFavorite = favMap == null ? false : favMap[productId] ?? false;
         _products.add(
           Product(
             id: productId,
@@ -86,7 +94,7 @@ class ProductsProvider with ChangeNotifier {
             description: productData['description'],
             imageUrl: productData['imageUrl'],
             price: productData['price'],
-            isFavorite: productData['isFavorite'],
+            isFavorite: isFavorite,
           ),
         );
       });

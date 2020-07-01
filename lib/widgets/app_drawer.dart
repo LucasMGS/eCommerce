@@ -1,5 +1,7 @@
+import 'package:eCommerce/providers/auth_provider.dart';
 import 'package:eCommerce/utils/appRoutes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -15,7 +17,8 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.shop),
             title: Text('Loja'),
-            onTap: () => Navigator.of(context).pushReplacementNamed('/'),
+            onTap: () =>
+                Navigator.of(context).pushReplacementNamed(AppRoutes.AUTH_HOME),
           ),
           Divider(),
           ListTile(
@@ -30,6 +33,13 @@ class AppDrawer extends StatelessWidget {
             title: Text('Gerenciar Produtos'),
             onTap: () =>
                 Navigator.of(context).pushReplacementNamed(AppRoutes.PRODUCTS),
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.exit_to_app),
+            title: Text('Sair'),
+            onTap: () =>
+                Provider.of<AuthProvider>(context, listen: false).logOut(),
           ),
           Divider(),
         ],
